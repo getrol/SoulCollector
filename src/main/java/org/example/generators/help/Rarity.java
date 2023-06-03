@@ -7,4 +7,5 @@ public enum Rarity {
     Epic,
     Master,
     Legendary
+
 }

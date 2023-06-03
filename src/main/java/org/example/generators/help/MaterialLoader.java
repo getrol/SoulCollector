@@ -1,14 +1,11 @@
 package org.example.generators.help;
 
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,169 +22,98 @@ public class MaterialLoader {
 
     public void connectToFile() {
         try {
-            FileInputStream fileInputStream = new FileInputStream(new File(fileName));
+            //Подключаемся к файлу
+            FileInputStream fileInputStream = new FileInputStream(fileName);
             XSSFWorkbook xssfWorkbook = new XSSFWorkbook(fileInputStream);
             XSSFSheet xssfSheet = xssfWorkbook.getSheet("Materials");
 
+            //Создаем итератор и подсписок материалов, относящийся к нулевой редкости.
             boolean hasStart = false;
             ArrayList<Material> materialArrayList = new ArrayList<>();
             Iterator<Row> rowIterator = xssfSheet.rowIterator();
+            MaterialConverter materialConverter = new MaterialConverter();
 
 
-            String currentRarity = null;
-            rowIteratorLabel:
+            Rarity currentRarity = null;
+            //Цикл для итерирования строк
             while (rowIterator.hasNext()) {
                 Row row = rowIterator.next();
                 Iterator<Cell> cellIterator = row.cellIterator();
-                String currentCell = cellIterator.next().getStringCellValue();
+                Cell currentCell = cellIterator.next();
+                String currentStringCell = currentCell.getStringCellValue();
 
-                if (currentCell.equals("Finish")) {
-                    break rowIteratorLabel;
-                } else if (currentCell.equals("Start")) {
+                if (currentStringCell.equals("Finish")) { //Определяет не закончился ли файл.
+                    break;
+                } else if (currentStringCell.equals("Start")) { //Определяет, когда начнутся материалы, а не вставки и ставит метку
                     hasStart = true;
                 } else if (hasStart) {
 
                     Material currentMaterial;
+                    Cell[] cells = new Cell[9]; //Определяет диапазон ячеек, вручную потому что вряд ли будет меняться.
+                    cells[0] = currentCell;
 
-                    String rarity = currentCell;
-                    String name = cellIterator.next().getStringCellValue();
-
-                    Cell ownCell = cellIterator.next();
-                    String features [] = ownCell.getStringCellValue().split("/");
-                    String weaponFeatures = null;
-                    String armorFeatures = null;
-
-                    if (features.length>1){
-                        armorFeatures = features[0];
-                        weaponFeatures = features[1];
-                    } else {
-                        armorFeatures = ownCell.getStringCellValue();
+                    for (int i = 1; i < cells.length; i++) {
+                        cells[i] = cellIterator.next();
                     }
 
+                    currentMaterial = materialConverter.makeMaterial(cells);
 
-
-                    String physicalDefence;
-                    String magicDefence;
-                    String healthPoints;
-
-                    String physicalDamage;
-                    String magicDamage;
-
-                    if (!rarity.equals(currentRarity)) {
+                    if (currentRarity != currentMaterial.getRarity()) {
                         if (currentRarity != null) {
                             materialsByRarity.add(materialArrayList);
                             materialArrayList = new ArrayList<>();
                         }
-                        currentRarity = rarity;
+                        currentRarity = currentMaterial.getRarity();
 
                     }
-
-
-                    physicalDefence = makeStringValue(cellIterator.next());
-                    magicDefence = makeStringValue(cellIterator.next());
-                    healthPoints = makeStringValue(cellIterator.next());
-
-                    physicalDamage = makeStringValue(cellIterator.next());
-                    magicDamage = makeStringValue(cellIterator.next());
-
-
-                    currentMaterial = new Material(rarity, name, armorFeatures, weaponFeatures, physicalDefence, magicDefence, healthPoints, physicalDamage, magicDamage);
                     materialArrayList.add(currentMaterial);
 
                 }
             }
 
 
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
 
-    public void printMaterialsByRarity() {
+    public Material[] formQueryWithoutWeapons(Rarity rarityFrom, Rarity rarityTo, int... amount) {
+        int startRarity;
+        int finishRarity;
 
-        for (ArrayList list :
-                materialsByRarity) {
-            for (int i = 0; i < list.size(); i++) {
-                Material oneMaterial = (Material) list.get(i);
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append("Название: ");
-                stringBuilder.append(oneMaterial.getName());
-
-                stringBuilder.append("\nСвойства: ");
-                stringBuilder.append(oneMaterial.getArmorFeatures())
-                        .append(" / ").append(oneMaterial.getWeaponFeatures());
-
-                stringBuilder.append("\nПоказатели брони: (");
-                stringBuilder.append(oneMaterial.getPhysicalDefence()).append(",")
-                        .append(oneMaterial.getMagicDefence()).append(",")
-                        .append(oneMaterial.getHealthPoints()).append(")");
-
-                stringBuilder.append("\nПоказатели урона: (");
-                stringBuilder.append(oneMaterial.getPhysicalDamage()).append(",")
-                        .append(oneMaterial.getMagicDamage()).append(")").append("\n");
-
-                System.out.println(oneMaterial.getRarity() + ": ");
-                System.out.println(stringBuilder.toString());
-            }
-
-        }
-    }
-
-    private String makeStringValue(Cell cell) {
-        String result;
-        if (cell.getCellType() == CellType.NUMERIC) {
-            result = String.valueOf((int) cell.getNumericCellValue());
-        } else {
-            String nonResult = cell.getStringCellValue();
-            try {
-                float i = Float.parseFloat(nonResult);
-                result = String.valueOf((int) i);
-            } catch (NumberFormatException e) {
-                result = nonResult;
-            }
-        }
-        return result;
-    }
-
-    public Material[] formQueryWithoutWeapons(Rarity rarityFrom, Rarity rarityTo, int ... amount) {
-        int startRarity = 0;
-        int finishRarity = 0;
-
-        startRarity = switch (rarityFrom){
+        startRarity = switch (rarityFrom) {
             case Common -> 0;
             case Rare -> 1;
             case VeryRare -> 2;
-            case Epic ->  3;
+            case Epic -> 3;
             case Master -> 4;
             case Legendary -> 5;
         };
 
-        finishRarity = switch (rarityTo){
+        finishRarity = switch (rarityTo) {
             case Common -> 0;
             case Rare -> 1;
             case VeryRare -> 2;
-            case Epic ->  3;
+            case Epic -> 3;
             case Master -> 4;
             case Legendary -> 5;
         };
-        int raritySize = finishRarity-startRarity+1;
+        int raritySize = finishRarity - startRarity + 1;
         Random random = new Random();
-        if (amount.length!=raritySize){
+        if (amount.length != raritySize) {
             throw new IllegalArgumentException();
         }
         ArrayList<Material> arrayList = new ArrayList<>();
 
         int t = 0;
-        for (int i = startRarity; i <finishRarity+1; i++) {
+        for (int i = startRarity; i < finishRarity + 1; i++) {
             ArrayList<Material> arrayListArrayList = materialsByRarity.get(i);
             for (int j = 0; j < amount[t]; j++) {
                 arrayList.add(arrayListArrayList.get(random.nextInt(0, arrayListArrayList.size())));
             }
             t++;
         }
-        return arrayList.toArray(new Material[arrayList.size()]);
+        return arrayList.toArray(new Material[0]);
     }
 }

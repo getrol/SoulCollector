@@ -1,0 +1,4 @@
+AbstractThing => ThingConverter => ThingLoader (massives of things) => GeneralFactory
+
+Material => MaterialConverter => MaterialLoader (massive of Material) => EquipmentFactory
+Weapon => WeaponConverter => EquipmentLoader (massives of Weapon and Armor) => EquipmentFactory

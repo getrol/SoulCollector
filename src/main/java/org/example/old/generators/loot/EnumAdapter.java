@@ -1,7 +1,8 @@
 package org.example.old.generators.loot;
 
-import static generators.loot.Rarity.*;
-import static generators.loot.Tier.*;
+
+import static org.example.old.generators.loot.Rarity.*;
+import static org.example.old.generators.loot.Tier.*;
 
 public class EnumAdapter {
 

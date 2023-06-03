@@ -1,10 +1,11 @@
 package org.example.old.generators.charachters;
 
+import org.example.old.workWithFiles.TxTReader;
+
 import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import workWithFiles.TxTReader;
 
 public class CharachterGenerator {
     protected String labelName = "Test";
