@@ -1,4 +1,4 @@
-package org.example.generators.help;
+package org.example.generators.help.equipment;
 
 import org.apache.poi.ss.usermodel.Cell;
 
@@ -26,7 +26,7 @@ public class WeaponConverter implements MyConverter{
         try {
             number = Float.parseFloat(damage.replace(',', '.'));
         } catch (NumberFormatException e){
-            number = -1;
+            number = 0;
         }
         return number;
     }
@@ -35,11 +35,17 @@ public class WeaponConverter implements MyConverter{
         try {
             number = Float.parseFloat(distance.replace(',', '.'));
         } catch (NumberFormatException e){
-            number = -1;
+            number = 0;
         }
         return number;
     }
-    private String determineBaseDistance(String name) {
-        return name;
+    private String determineBaseDistance(String baseDistance) {
+        int number;
+        try {
+            number = Integer.parseInt(baseDistance);
+            return null;
+        } catch (NumberFormatException e){
+            return baseDistance;
+        }
     }
 }

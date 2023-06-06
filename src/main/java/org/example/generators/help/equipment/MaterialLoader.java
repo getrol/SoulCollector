@@ -1,9 +1,11 @@
-package org.example.generators.help;
+package org.example.generators.help.equipment;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.example.generators.help.Rarity;
+import org.example.generators.help.RarityConverter;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -82,23 +84,9 @@ public class MaterialLoader {
         int startRarity;
         int finishRarity;
 
-        startRarity = switch (rarityFrom) {
-            case Common -> 0;
-            case Rare -> 1;
-            case VeryRare -> 2;
-            case Epic -> 3;
-            case Master -> 4;
-            case Legendary -> 5;
-        };
+        startRarity = RarityConverter.rarityToInt(rarityFrom);
+        finishRarity = RarityConverter.rarityToInt(rarityTo);
 
-        finishRarity = switch (rarityTo) {
-            case Common -> 0;
-            case Rare -> 1;
-            case VeryRare -> 2;
-            case Epic -> 3;
-            case Master -> 4;
-            case Legendary -> 5;
-        };
         int raritySize = finishRarity - startRarity + 1;
         Random random = new Random();
         if (amount.length != raritySize) {
