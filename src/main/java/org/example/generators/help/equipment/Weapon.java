@@ -1,6 +1,6 @@
-package org.example.generators.help;
+package org.example.generators.help.equipment;
 
-public class Weapon{
+public class Weapon extends Equipment{
     private final String name;
     private final float damageByMaterial;
     private final float distanceByMaterial;

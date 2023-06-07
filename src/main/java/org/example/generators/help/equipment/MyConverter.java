@@ -1,4 +1,4 @@
-package org.example.generators.help;
+package org.example.generators.help.equipment;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;

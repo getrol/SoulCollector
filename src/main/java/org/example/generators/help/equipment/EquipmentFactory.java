@@ -1,9 +1,9 @@
-package org.example.generators.help;
+package org.example.generators.help.equipment;
 
 public class EquipmentFactory {
 
     public static String makeArmor (Armor rawArmor, Material material){ //Считается, что поступаемый материал уже проверен на возможность быть броней
-        return rawArmor.name() + " из " + material.getName() + ". Броня: "
+        return rawArmor.getName() + " из " + material.getName() + ". Броня: "
                 + String.format("(%d,%d,%d)", material.getPhysicalDefence(), material.getMagicDefence(), material.getHealthPoints())
                 + ", " + material.getArmorFeatures();
     }

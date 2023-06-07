@@ -1,4 +1,6 @@
-package org.example.generators.help;
+package org.example.generators.help.equipment;
+
+import org.example.generators.help.Rarity;
 
 public class Material {
 
