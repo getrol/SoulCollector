@@ -8,21 +8,32 @@ import java.awt.*;
 
 public class ExcludeArmorCheckBoxPanel extends ExcludeCheckBoxPanel {
     Armor[] armors;
-    EquipmentCheckBox[] equipmentCheckBoxes;
+
 
     public ExcludeArmorCheckBoxPanel(Armor[] armors) {
         this.armors = armors;
 
         setBackground(Color.CYAN);
+
+        Container containerCheckBoxes = new Container();
+        containerCheckBoxes.setLayout(new BoxLayout(containerCheckBoxes, BoxLayout.Y_AXIS));
+
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        Label armorLabel = new Label("Исключить броню: ");
-        add(armorLabel);
+        JLabel armorLabel = new JLabel("Исключить броню: ");
+        armorLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
 
         equipmentCheckBoxes = new EquipmentCheckBox[armors.length];
         for (int i = 0; i < armors.length; i++) {
             EquipmentCheckBox equipmentCheckBox = new EquipmentCheckBox(armors[i].getName(), armors[i]);
+            equipmentCheckBox.setAlignmentX(Component.CENTER_ALIGNMENT);
             equipmentCheckBoxes[i] = equipmentCheckBox;
-            add(equipmentCheckBox);
+            containerCheckBoxes.add(equipmentCheckBox);
         }
+
+        add(armorLabel);
+        add(containerCheckBoxes);
     }
+
+
 }

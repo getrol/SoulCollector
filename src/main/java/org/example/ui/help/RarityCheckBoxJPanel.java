@@ -93,8 +93,9 @@ public class RarityCheckBoxJPanel extends JPanel { //Очень херово с�
             } else {
                 throw new IllegalArgumentException();
             }
+           selectedCheckBox[i] = !selectedCheckBox[i];
 
-            selectedCheckBox[i] = !selectedCheckBox[i];
+
         }
     }
 }

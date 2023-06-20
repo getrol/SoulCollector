@@ -1,11 +1,11 @@
 package org.example.generators.help.equipment;
 
 public class Weapon extends Equipment{
-    private final String name;
-    private final float damageByMaterial;
-    private final float distanceByMaterial;
-    private final String baseDistance;
-    private boolean isDistance = true;
+    final String name;
+    final float damageByMaterial;
+    final float distanceByMaterial;
+    final String baseDistance;
+    boolean isDistance = true;
 
     public Weapon(String name, float damageByMaterial, float distanceByMaterial, String baseDistance) {
         this.name = name;

@@ -3,6 +3,7 @@ package org.example.generators;
 import org.example.generators.help.*;
 import org.example.generators.help.equipment.*;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class EquipmentGenerator {
@@ -40,13 +41,13 @@ public class EquipmentGenerator {
 
             Material randomMaterial = materials[i];
 
-            if (randomMaterial.getRarity()!=rarity){
+            if (randomMaterial.getRarity() != rarity) {
                 rarity = randomMaterial.getRarity();
                 stringBuilder.append("\n").append(rarity).append(": \n");
             }
             //Создаем броню, тестовая вероятность
             if (armorOrWeapon < 5) {
-                if (randomMaterial.isCanBeArmor()){
+                if (randomMaterial.isCanBeArmor()) {
                     Armor randomArmor = rawArmors[random.nextInt(0, rawArmors.length)];
                     equipments[i] = EquipmentFactory.makeArmor(randomArmor, randomMaterial);
                     stringBuilder.append(equipments[i]).append("\n");
@@ -55,7 +56,7 @@ public class EquipmentGenerator {
                 }
 
             } else { //Или создаем оружие
-                if (randomMaterial.isCanBeWeapon()){
+                if (randomMaterial.isCanBeWeapon()) {
                     Weapon randomWeapon = rawWeapons[random.nextInt(0, rawWeapons.length)];
                     equipments[i] = EquipmentFactory.makeWeapon(randomWeapon, randomMaterial);
                     stringBuilder.append(equipments[i]).append("\n");
@@ -66,6 +67,34 @@ public class EquipmentGenerator {
         }
         return stringBuilder.toString();
     }
+
+    //Исключаем из списков генерации часть брони. Массив теоретически должен быть в том же порядке, ведь инфа получается из одного и того же лоадера.
+    private Armor[] makeArmorExcluding(boolean[] excludeArmor) {
+        Armor [] rawArmor = equipmentLoader.rawArmorList;
+        ArrayList<Armor> armorsResult = new ArrayList<>();
+        for (int i = 0; i < rawArmor.length; i++) {
+            if (!excludeArmor[i]){
+                armorsResult.add(rawArmor[i]);
+            }
+        }
+        return armorsResult.toArray(new Armor[armorsResult.size()]);
+    }
+
+    //Исключаем из списков генерации часть оружия. Массив теоретически должен быть в том же порядке, ведь инфа получается из одного и того же лоадера.
+    private Weapon[] makeWeaponExcluding(boolean[] excludeWeapon) {
+        Weapon [] rawWeapon = equipmentLoader.rawWeaponList;
+        ArrayList<Weapon> weaponsResult = new ArrayList<>();
+        for (int i = 0; i < rawWeapon.length; i++) {
+            if (!excludeWeapon[i]){
+                weaponsResult.add(rawWeapon[i]);
+            }
+        }
+        return weaponsResult.toArray(new Weapon[weaponsResult.size()]);
+    }
+
+
+
+
 }
 
 
