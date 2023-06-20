@@ -1,4 +1,4 @@
-package org.example.generators.help;
+package org.example.generators.help.equipment.types;
 
 public enum Rarity {
     Common,

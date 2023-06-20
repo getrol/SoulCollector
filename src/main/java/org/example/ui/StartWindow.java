@@ -1,70 +1,108 @@
 package org.example.ui;
 
-import org.example.generators.EquipmentGenerator;
-import org.example.generators.help.equipment.EquipmentLoader;
-import org.example.generators.help.equipment.MaterialLoader;
+import org.example.generators.ReadyEquipmentGenerator;
+import org.example.generators.help.equipment.loaders.EquipmentLoader;
+import org.example.generators.help.equipment.loaders.MaterialLoader;
+import org.example.generators.help.equipment.types.*;
 import org.example.ui.help.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 
 public class StartWindow extends JFrame {
 
-    JRadioButton armorRadioButton;
-    JRadioButton weaponRadioButton;
-    JRadioButton armorWeaponRadioButton;
-    EquipmentGenerator equipmentGenerator;
+    ReadyEquipmentGenerator readyEquipmentGenerator;
 
-    ExcludeCheckBoxPanel armorCheckBoxesPanel;
-    ExcludeCheckBoxPanel weaponCheckBoxesPanel;
+    ArmorWeaponRadioButtonPanel armorWeaponRadioButtonPanel;
+    EquipmentCheckBoxPanel<Armor> armorCheckBoxesPanel;
+    EquipmentCheckBoxPanel<Weapon> weaponCheckBoxesPanel;
 
     RarityCheckBoxJPanel rarityCheckBoxJPanel;
 
     public StartWindow() throws HeadlessException {
 
-        this.equipmentGenerator = new EquipmentGenerator(new MaterialLoader(), new EquipmentLoader());
-        armorRadioButton = new JRadioButton("Броня", true);
-        weaponRadioButton = new JRadioButton("Оружие", false);
-        armorWeaponRadioButton = new JRadioButton("Броня/Оружие", false);
+        this.readyEquipmentGenerator = new ReadyEquipmentGenerator(new MaterialLoader(), new EquipmentLoader());
 
-        armorCheckBoxesPanel = new ExcludeArmorCheckBoxPanel(equipmentGenerator.getEquipmentLoader().rawArmorList);
-        weaponCheckBoxesPanel = new ExcludeWeaponCheckBoxPanel(equipmentGenerator.getEquipmentLoader().rawWeaponList);
+        this.armorCheckBoxesPanel = new EquipmentCheckBoxPanel<>(readyEquipmentGenerator.getEquipmentLoader().rawArmorList);
+        this.weaponCheckBoxesPanel = new EquipmentCheckBoxPanel<>(readyEquipmentGenerator.getEquipmentLoader().rawWeaponList);
 
-        rarityCheckBoxJPanel = new RarityCheckBoxJPanel();
+        this.armorWeaponRadioButtonPanel = new ArmorWeaponRadioButtonPanel(armorCheckBoxesPanel, weaponCheckBoxesPanel);
+        this.rarityCheckBoxJPanel = new RarityCheckBoxJPanel();
 
         this.setName("Main");
-        this.setSize(400, 800);
+        //this.setSize(400, 800);
+        this.setBounds(300, 100, 800, 500);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
     public void buildUI() {
 
         //RadioPanel to Frame
-        add(new ArmorWeaponRadioButtonPanel(armorCheckBoxesPanel, weaponCheckBoxesPanel), BorderLayout.NORTH);
+        add(armorWeaponRadioButtonPanel, BorderLayout.NORTH);
 
         //Armor CheckBoxes
         add(armorCheckBoxesPanel, BorderLayout.WEST);
         //Equipment JCheckBoxes
         add(weaponCheckBoxesPanel, BorderLayout.EAST);
-
+        //Rarity JCheckBoxes
         add(rarityCheckBoxJPanel, BorderLayout.SOUTH);
 
-        JButton centerButton = new JButton();
-        centerButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JDialog jDialog = new JDialog();
-                jDialog.setSize(300,300);
-                jDialog.add(new Label(rarityCheckBoxJPanel.getSelectedCheckBoxString()));
-                jDialog.setVisible(true);
-            }
-        });
+        JButton centerButton = new JButton("Generate");
+        centerButton.addActionListener(new MyGenerateActionListener());
         add(centerButton, BorderLayout.CENTER);
 
-        pack();
 
         this.setVisible(true);
+    }
+
+    class MyGenerateActionListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Armor [] armorCheckBoxes = armorCheckBoxesPanel.getSelectedEquipment(new Armor[0]);
+            Weapon [] weaponsCheckBoxes = weaponCheckBoxesPanel.getSelectedEquipment(new Weapon[0]);
+            Rarity [] rarities = rarityCheckBoxJPanel.getRarities();
+
+            try {
+                BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("Result1.txt"));
+
+                if(armorCheckBoxes.length!=0){
+                    ReadyArmor [] readyArmors = readyEquipmentGenerator.makeReadyArmorsSeveralRarity(armorCheckBoxes, rarities, 10);
+                    for (int i = 0; i<readyArmors.length; i++) {
+                        bufferedWriter.write(i + ". ");
+                        bufferedWriter.write(readyArmors[i].toString()+"\n");
+                        bufferedWriter.flush();
+                    }
+                }
+                if (weaponsCheckBoxes.length!=0){
+                    ReadyWeapon [] readyWeapons = readyEquipmentGenerator.makeReadyWeaponsSeveralRarity(weaponsCheckBoxes,rarities,8);
+                    for (int i = 0; i<readyWeapons.length; i++) {
+                        bufferedWriter.write(i + ". ");
+                        bufferedWriter.write(readyWeapons[i].toString()+"\n");
+                        bufferedWriter.flush();
+                    }
+                }
+                bufferedWriter.close();
+
+            } catch (Exception p){
+                p.printStackTrace();
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+        }
     }
 }

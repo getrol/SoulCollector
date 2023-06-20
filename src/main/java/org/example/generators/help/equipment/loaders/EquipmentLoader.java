@@ -1,10 +1,12 @@
-package org.example.generators.help.equipment;
+package org.example.generators.help.equipment.loaders;
 
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.example.generators.help.equipment.types.Armor;
+import org.example.generators.help.equipment.types.Weapon;
 
 import java.io.*;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package org.example.generators.help.equipment;
+package org.example.generators.help.equipment.types;
 
 public abstract class Equipment {
     String name;

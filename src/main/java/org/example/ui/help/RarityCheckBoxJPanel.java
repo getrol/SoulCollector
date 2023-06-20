@@ -1,9 +1,13 @@
 package org.example.ui.help;
 
+import org.example.generators.help.equipment.loaders.RarityConverter;
+import org.example.generators.help.equipment.types.Rarity;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
 
 public class RarityCheckBoxJPanel extends JPanel { //Очень херово сделан класс
 
@@ -19,6 +23,8 @@ public class RarityCheckBoxJPanel extends JPanel { //Очень херово с�
     JCheckBox master;
 
     JCheckBox legendary;
+
+    Rarity[] rarities;
 
     public RarityCheckBoxJPanel() {
 
@@ -55,7 +61,8 @@ public class RarityCheckBoxJPanel extends JPanel { //Очень херово с�
         add(veryRare);
         add(epic);
         add(master);
-        add(legendary);
+        //add(legendary);
+
 
     }
 
@@ -63,13 +70,23 @@ public class RarityCheckBoxJPanel extends JPanel { //Очень херово с�
         return selectedCheckBox;
     }
 
-    public String getSelectedCheckBoxString (){
+    public String getSelectedCheckBoxString() {
         StringBuilder stringBuilder = new StringBuilder();
         for (boolean b :
                 selectedCheckBox) {
             stringBuilder.append(b).append("\n");
         }
         return stringBuilder.toString();
+    }
+
+    public Rarity [] getRarities (){
+        ArrayList<Rarity> arrayList = new ArrayList<>();
+        for (int i = 0; i < selectedCheckBox.length; i++) {
+            if (selectedCheckBox[i]){
+                arrayList.add(RarityConverter.intToRarity(i));
+            }
+        }
+        return arrayList.toArray(new Rarity[0]);
     }
 
     class RarityListener implements ItemListener {
@@ -93,8 +110,8 @@ public class RarityCheckBoxJPanel extends JPanel { //Очень херово с�
             } else {
                 throw new IllegalArgumentException();
             }
-
             selectedCheckBox[i] = !selectedCheckBox[i];
+
         }
     }
 }

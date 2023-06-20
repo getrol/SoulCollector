@@ -1,4 +1,4 @@
-package org.example.generators.help.equipment;
+package org.example.generators.help.equipment.types;
 
 public class Armor extends Equipment{
     String name;

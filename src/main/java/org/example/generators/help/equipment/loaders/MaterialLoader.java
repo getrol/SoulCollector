@@ -1,25 +1,30 @@
-package org.example.generators.help.equipment;
+package org.example.generators.help.equipment.loaders;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.example.generators.help.Rarity;
-import org.example.generators.help.RarityConverter;
+import org.example.generators.help.equipment.types.Rarity;
+import org.example.generators.help.equipment.types.Material;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
 
 public class MaterialLoader {
 
     String fileName = "G:\\Копия Диска\\Ролевки\\Накопитель душ\\Механики и лут\\Сферы школ\\Сферы ремесла\\MaterialsAndWeapons.xlsx";
-    ArrayList<ArrayList<Material>> materialsByRarity = new ArrayList<>();
+    HashMap<Rarity, Material[]> materialsByRarity = new HashMap<>();
 
     public MaterialLoader() {
         connectToFile();
+    }
+
+    public HashMap<Rarity, Material[]> getMaterialsByRarity() {
+        return materialsByRarity;
     }
 
     public void connectToFile() {
@@ -45,6 +50,7 @@ public class MaterialLoader {
                 String currentStringCell = currentCell.getStringCellValue();
 
                 if (currentStringCell.equals("Finish")) { //Определяет не закончился ли файл.
+                    materialsByRarity.put(currentRarity, materialArrayList.toArray(new Material[0]));
                     break;
                 } else if (currentStringCell.equals("Start")) { //Определяет, когда начнутся материалы, а не вставки и ставит метку
                     hasStart = true;
@@ -58,11 +64,13 @@ public class MaterialLoader {
                         cells[i] = cellIterator.next();
                     }
 
-                    currentMaterial = materialConverter.makeMaterial(cells);
+                    currentMaterial = materialConverter.makeMaterial(cells); //Создает матриал на основе ячейки
 
+
+                    //Проверка на то, сменилась ли редкость. Если да, то в карту кладется массив элементов. Если нет, то продолжает наполняться, пока не сменится.
                     if (currentRarity != currentMaterial.getRarity()) {
                         if (currentRarity != null) {
-                            materialsByRarity.add(materialArrayList);
+                            materialsByRarity.put(currentRarity, materialArrayList.toArray(new Material[0]));
                             materialArrayList = new ArrayList<>();
                         }
                         currentRarity = currentMaterial.getRarity();
@@ -79,29 +87,4 @@ public class MaterialLoader {
         }
     }
 
-
-    public Material[] formQueryWithoutWeapons(Rarity rarityFrom, Rarity rarityTo, int... amount) {
-        int startRarity;
-        int finishRarity;
-
-        startRarity = RarityConverter.rarityToInt(rarityFrom);
-        finishRarity = RarityConverter.rarityToInt(rarityTo);
-
-        int raritySize = finishRarity - startRarity + 1;
-        Random random = new Random();
-        if (amount.length != raritySize) {
-            throw new IllegalArgumentException();
-        }
-        ArrayList<Material> arrayList = new ArrayList<>();
-
-        int t = 0;
-        for (int i = startRarity; i < finishRarity + 1; i++) {
-            ArrayList<Material> arrayListArrayList = materialsByRarity.get(i);
-            for (int j = 0; j < amount[t]; j++) {
-                arrayList.add(arrayListArrayList.get(random.nextInt(0, arrayListArrayList.size())));
-            }
-            t++;
-        }
-        return arrayList.toArray(new Material[0]);
-    }
 }
