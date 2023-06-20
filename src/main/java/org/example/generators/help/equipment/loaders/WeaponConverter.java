@@ -1,6 +1,7 @@
-package org.example.generators.help.equipment;
+package org.example.generators.help.equipment.loaders;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.example.generators.help.equipment.types.Weapon;
 
 public class WeaponConverter implements MyConverter{
 

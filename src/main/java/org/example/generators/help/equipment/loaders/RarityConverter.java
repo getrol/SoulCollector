@@ -1,4 +1,6 @@
-package org.example.generators.help;
+package org.example.generators.help.equipment.loaders;
+
+import org.example.generators.help.equipment.types.Rarity;
 
 public class RarityConverter {
     public static int rarityToInt (Rarity rarity){
